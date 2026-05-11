@@ -1,0 +1,41 @@
+﻿FINAL PROJECT - AI Stock Market Prediction System
+
+Project Description:
+This project is a local Streamlit web application for predicting stock market movement using historical Nifty 500 stock data. It was converted from the original Colab-style project into a proper runnable desktop project.
+
+Main Features:
+1. Login and Signup system
+   - Users can create an account using name, email, and password.
+   - Passwords are saved using salted hashing, not plain text.
+   - Users can log in and log out.
+
+2. User Dashboard
+   - After login, the user gets a dashboard page.
+   - The dashboard includes a personal watchlist.
+   - The watchlist is saved locally in users.json after signup/use.
+
+3. Stock Prediction Dashboard
+   - User can select a stock from the Nifty 500 dataset.
+   - The app loads historical stock data from nifty500_stocks.csv.
+   - It can also add recent Yahoo Finance data if internet data is available.
+   - It creates technical features such as daily return, volatility, moving averages, EMA, and lag values.
+   - It trains Random Forest models for next close price prediction and up/down direction prediction.
+   - It displays prediction metrics, signal, candlestick chart, data table, features table, and model scores.
+
+Files Included:
+- app.py: Main Streamlit application with login, signup, user dashboard, and prediction dashboard.
+- requirements.txt: Python libraries required to run the project.
+- run_app.bat: Double-click runner for Windows.
+- run_app.ps1: PowerShell runner.
+- README.md: Basic project instructions.
+- nifty500_stocks.csv: Historical stock dataset used by the app.
+
+How to Run:
+1. Open the FINAL PROJECT folder.
+2. Double-click run_app.bat.
+3. The app will start in the browser at http://localhost:8501.
+4. Create a new account on the signup page.
+5. After signup/login, use the dashboard and stock prediction page.
+
+Important Note:
+This project is for educational/demo purposes only. The predictions should not be used as real financial or trading advice.

@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+users.json
+.env
+.venv/
+venv/
+python-*.exe
+python-install.log
+project documentation cllg - backup before codex.docx
