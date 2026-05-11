@@ -236,6 +236,40 @@ def candlestick_chart(df: pd.DataFrame, title: str) -> go.Figure:
     return fig
 
 
+def line_chart(df: pd.DataFrame, columns: list[str], title: str, y_title: str) -> go.Figure:
+    fig = go.Figure()
+    for column in columns:
+        fig.add_trace(go.Scatter(x=df["Date"], y=df[column], mode="lines", name=column))
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=y_title, hovermode="x unified")
+    return fig
+
+
+def volume_chart(df: pd.DataFrame, title: str) -> go.Figure:
+    fig = go.Figure(data=[go.Bar(x=df["Date"], y=df["Volume"], name="Volume")])
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title="Volume")
+    return fig
+
+
+def prediction_chart(df: pd.DataFrame, predicted_close: float, title: str) -> go.Figure:
+    recent = df.tail(120).copy()
+    next_date = recent["Date"].iloc[-1] + pd.Timedelta(days=1)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=recent["Date"], y=recent["Close"], mode="lines", name="Actual Close"))
+    fig.add_trace(
+        go.Scatter(
+            x=[next_date],
+            y=[predicted_close],
+            mode="markers+text",
+            name="Predicted Next Close",
+            text=["Prediction"],
+            textposition="top center",
+            marker={"size": 12},
+        )
+    )
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title="Close Price", hovermode="x unified")
+    return fig
+
+
 initialize_session()
 
 if not st.session_state.authenticated:
@@ -330,14 +364,40 @@ metric_cols[1].metric("Predicted next close", f"{next_close:,.2f}", f"{change_pc
 metric_cols[2].metric("Signal", "UP" if direction == 1 else "DOWN")
 metric_cols[3].metric("Model accuracy", f"{model_metrics['accuracy'] * 100:.1f}%")
 
-st.plotly_chart(candlestick_chart(stock_df.tail(250), f"{selected_stock} Price Action"), use_container_width=True)
+recent_stock = stock_df.tail(250)
+recent_features = featured_df.tail(250)
+
+st.subheader("Separate Graph Outputs")
+
+st.markdown("#### 1. Candlestick Price Action")
+st.plotly_chart(candlestick_chart(recent_stock, f"{selected_stock} Candlestick Price Action"), use_container_width=True)
+
+st.markdown("#### 2. Closing Price Trend")
+st.plotly_chart(line_chart(recent_features, ["Close"], f"{selected_stock} Closing Price Trend", "Close Price"), use_container_width=True)
+
+st.markdown("#### 3. Moving Average Comparison")
+st.plotly_chart(
+    line_chart(recent_features, ["Close", "MA_10", "MA_20", "EMA_10", "EMA_20"], f"{selected_stock} Moving Averages", "Price"),
+    use_container_width=True,
+)
+
+st.markdown("#### 4. Trading Volume")
+st.plotly_chart(volume_chart(recent_stock, f"{selected_stock} Trading Volume"), use_container_width=True)
+
+st.markdown("#### 5. Daily Return")
+st.plotly_chart(line_chart(recent_features, ["Daily_Return"], f"{selected_stock} Daily Return", "Daily Return"), use_container_width=True)
+
+st.markdown("#### 6. Volatility")
+st.plotly_chart(line_chart(recent_features, ["Volatility"], f"{selected_stock} Rolling Volatility", "Volatility"), use_container_width=True)
+
+st.markdown("#### 7. Actual vs Predicted Next Close")
+st.plotly_chart(prediction_chart(featured_df, next_close, f"{selected_stock} Prediction Output"), use_container_width=True)
 
 tab_data, tab_features, tab_model = st.tabs(["Data", "Features", "Model"])
 with tab_data:
     st.dataframe(stock_df.tail(50), use_container_width=True)
 
 with tab_features:
-    st.line_chart(featured_df.set_index("Date")[["Close", "MA_10", "MA_20", "EMA_10", "EMA_20"]].tail(250))
     st.dataframe(featured_df.tail(50), use_container_width=True)
 
 with tab_model:
