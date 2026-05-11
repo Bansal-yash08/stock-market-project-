@@ -10,3 +10,7 @@ python-install.log
 project documentation cllg - backup before codex.docx
 gh_*_windows_amd64.*
 tools/
+cloudflared*.exe
+cloudflared*.log
+~$*.docx
+generate_final_project_pdf.py
